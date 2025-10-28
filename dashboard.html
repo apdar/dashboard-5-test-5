@@ -1,0 +1,2948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welsh Museums Dashboard</title>
+    <style>
+        /* Dashboard Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+
+        .dashboard-nav {
+            background-color: #2c3e50;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-item a {
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-item a:hover {
+            opacity: 0.8;
+        }
+
+        .overview-section, .comparison-section {
+            padding: 2rem;
+        }
+
+        .overview-section h2, .comparison-section h2, .table-component h2, .chart-component h2 {
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .overview-card, .card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .overview-card:hover, .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .overview-card h3 {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value, .card-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #3498db;
+            margin: 0.5rem 0;
+        }
+
+        .table-component {
+            padding: 2rem;
+            background: white;
+            margin: 1rem 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .table-controls {
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .search-box {
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .chart-component {
+            padding: 2rem;
+            background: white;
+            margin: 1rem 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .chart-container {
+            margin-top: 1rem;
+        }
+
+        .bar-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .bar-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .bar-label {
+            min-width: 200px;
+            font-size: 0.85rem;
+        }
+
+        .bar-wrapper {
+            flex: 1;
+            background: #ecf0f1;
+            border-radius: 4px;
+            height: 30px;
+            position: relative;
+        }
+
+        .bar-fill {
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            height: 100%;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 0.5rem;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .pie-chart {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .pie-visual {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            margin: 0 auto;
+        }
+
+        .pie-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+        }
+
+        .legend-label {
+            flex: 1;
+        }
+
+        .legend-value {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .comparison-container {
+            margin-top: 1.5rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .comparison-select {
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+            max-width: 300px;
+            margin-bottom: 1rem;
+        }
+
+        .comparison-result {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .comparison-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .comparison-stat {
+            padding: 1rem;
+            background: white;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .comparison-stat-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .comparison-stat-value {
+            color: #3498db;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Component -->
+    <nav class="dashboard-nav">
+        <div class="nav-brand">Welsh Museums Dashboard</div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="#overview">Overview</a></li>
+            <li class="nav-item"><a href="#data">Data</a></li>
+            <li class="nav-item"><a href="#charts">Charts</a></li>
+            <li class="nav-item"><a href="#comparison">Comparison</a></li>
+        </ul>
+    </nav>
+
+    <!-- Overview Component -->
+    <section id="overview" class="overview-section">
+        <h2>Overview</h2>
+        <div class="overview-grid" id="overview-grid">
+            <!-- Overview cards will be inserted here -->
+        </div>
+    </section>
+
+    <!-- Table Component -->
+    <div id="data" class="table-component">
+        <h2>Welsh Museums Data</h2>
+        <div class="table-controls">
+            <input type="text" id="search-box" class="search-box" placeholder="Search museums...">
+        </div>
+        <div class="table-wrapper">
+            <table id="data-table">
+                <thead>
+                    <tr id="table-header"></tr>
+                </thead>
+                <tbody id="table-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Chart Component -->
+    <div id="charts" class="chart-component">
+        <h2>Top 10 Museums by Digital Growth Score</h2>
+        <div class="chart-container">
+            <div id="chart1" class="bar-chart"></div>
+        </div>
+    </div>
+
+    <div class="chart-component">
+        <h2>Accessibility Metrics Distribution</h2>
+        <div class="chart-container">
+            <div id="chart2" class="pie-chart"></div>
+        </div>
+    </div>
+
+    <!-- Comparison Component -->
+    <section id="comparison" class="comparison-section">
+        <h2>Comparison</h2>
+        <div class="comparison-container">
+            <select id="comparison-field" class="comparison-select">
+                <option value="">Select field to compare</option>
+            </select>
+            <div id="comparison-result"></div>
+        </div>
+    </section>
+
+    <script>
+        // Embedded data
+        const museumsData = [
+  {
+    "name": "Aberconwy House ",
+    "url": "https://www.nationaltrust.org.uk/visit/wales/aberconwy-house",
+    "company number": "7692200",
+    "companies house name": "ABERCONWY LIMITED",
+    "companies house address": "Talacre Beach Caravan Park Station Road, Talacre, Holywell, Clwyd, CH8 9RD",
+    "incorporation date": "2011-07-04",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": 7795.49,
+    "digitisation score": 48.0,
+    "reading ease": 73.88,
+    "internal links": 172.0,
+    "accessibility issues - minor": 2.0,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": 0.86,
+    "lighthouse performance": 0.3,
+    "lighthouse seo": 0.3
+  },
+  {
+    "name": "Abergavenny Museum ",
+    "url": "www.abergavennymuseum.org.uk ",
+    "company number": "",
+    "companies house name": "",
+    "companies house address": "",
+    "incorporation date": "",
+    "company status": "",
+    "company type": "",
+    "digital growth score": null,
+    "digitisation score": null,
+    "reading ease": null,
+    "internal links": null,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": null,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": null,
+    "lighthouse performance": null,
+    "lighthouse seo": null
+  },
+  {
+    "name": "Abertillery and District Museum",
+    "url": "http://www.abertilleryanddistrictmuseum.org.uk/",
+    "company number": "3286610",
+    "companies house name": "ABERTILLERY & DISTRICT MUSEUM SOCIETY",
+    "companies house address": "The Metropole, Market Street, Abertillery, Gwent, NP13 1AH",
+    "incorporation date": "1996-12-02",
+    "company status": "Active",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": 2.85,
+    "digitisation score": 5.0,
+    "reading ease": 70.19,
+    "internal links": 0.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 4.0,
+    "lighthouse accessibility": 0.57,
+    "lighthouse performance": 0.84,
+    "lighthouse seo": 0.84
+  },
+  {
+    "name": "Aberystwyth University Ceramics Collection ",
+    "url": "",
+    "company number": "",
+    "companies house name": "",
+    "companies house address": "",
+    "incorporation date": "",
+    "company status": "",
+    "company type": "",
+    "digital growth score": null,
+    "digitisation score": null,
+    "reading ease": null,
+    "internal links": null,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": null,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": null,
+    "lighthouse performance": null,
+    "lighthouse seo": null
+  },
+  {
+    "name": "Aberystwyth University, School of Art Museum and Galleries ",
+    "url": "http://museum.aber.ac.uk/",
+    "company number": "5373709",
+    "companies house name": "FRIENDS OF BRADFORD ART GALLERIES AND MUSEUMS",
+    "companies house address": "Cartwright Hall, Lister Park, Bradford, West Yorkshire, BD9 4NS",
+    "incorporation date": "2005-02-23",
+    "company status": "Active",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": 12.72,
+    "digitisation score": 6.0,
+    "reading ease": 40.35,
+    "internal links": 0.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": 2.0,
+    "lighthouse accessibility": 0.64,
+    "lighthouse performance": 0.8,
+    "lighthouse seo": 0.8
+  },
+  {
+    "name": "Amgueddfa Torfaen Museum (Formerly Pontypool)",
+    "url": "https://www.torfaenmuseum.org.uk/",
+    "company number": "12390673",
+    "companies house name": "AMGUEDDFA CAE HEN MUSEUM",
+    "companies house address": "Gelli 7 Llwyn Y Gibwst, Llansannan, Conwy, Wales, LL16 5HQ",
+    "incorporation date": "2020-01-07",
+    "company status": "Active",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": 6.59,
+    "digitisation score": 19.0,
+    "reading ease": 61.87,
+    "internal links": 0.0,
+    "accessibility issues - minor": 2.0,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 2.0,
+    "lighthouse accessibility": 0.84,
+    "lighthouse performance": 0.35,
+    "lighthouse seo": 0.35
+  },
+  {
+    "name": "Andrew Logan Museum of Sculpture ",
+    "url": "https://andrewloganmuseum.org/",
+    "company number": "2155701",
+    "companies house name": "ANDREW LOGAN MUSEUM OF SCULPTURE LIMITED",
+    "companies house address": "Andrew Logan Museum Of Sculpture Aqueduct Road, Berriew, Welshpool, Powys, Wales, SY21 8AH",
+    "incorporation date": "1987-08-19",
+    "company status": "Active",
+    "company type": "Private company limited by guarantee without share capital",
+    "digital growth score": 29.95,
+    "digitisation score": -10.0,
+    "reading ease": 76.72,
+    "internal links": 0.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 2.0,
+    "lighthouse accessibility": null,
+    "lighthouse performance": null,
+    "lighthouse seo": null
+  },
+  {
+    "name": "Barmouth Sailors\u00e2\u20ac\u2122 Institute ",
+    "url": "http://barsailinst.org.uk/",
+    "company number": "OE005420",
+    "companies house name": "BARMOUTH LIMITED",
+    "companies house address": "",
+    "incorporation date": "2022-11-28",
+    "company status": "Registered",
+    "company type": "Overseas entity",
+    "digital growth score": 2.29,
+    "digitisation score": 15.0,
+    "reading ease": 62.07,
+    "internal links": 0.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 3.0,
+    "lighthouse accessibility": 0.82,
+    "lighthouse performance": 0.72,
+    "lighthouse seo": 0.72
+  },
+  {
+    "name": "Big Pit: National Coal Museum ",
+    "url": "https://museum.wales/bigpit/",
+    "company number": "1702426",
+    "companies house name": "NATIONAL COAL MINING MUSEUM FOR ENGLAND TRUST LTD",
+    "companies house address": "Caphouse Colliery, New Road, Overton Wakefield, West Yorkshire, WF4 4RH",
+    "incorporation date": "1983-02-24",
+    "company status": "Active",
+    "company type": "Private company limited by guarantee without share capital",
+    "digital growth score": 1708.47,
+    "digitisation score": 59.0,
+    "reading ease": 64.78,
+    "internal links": 87.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": 1.0,
+    "lighthouse accessibility": 0.98,
+    "lighthouse performance": 0.69,
+    "lighthouse seo": 0.69
+  },
+  {
+    "name": "Blaenavon Community Heritage",
+    "url": "https://blaenavonmuseum.wixsite.com/website",
+    "company number": "10083063",
+    "companies house name": "HERITAGE ELECTRICS (BLAENAVON) LIMITED",
+    "companies house address": "13 Sycamore Road, Blaenavon, Pontypool, Wales, NP4 9EB",
+    "incorporation date": "2016-03-24",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": 2.0,
+    "digitisation score": 27.0,
+    "reading ease": 57.57,
+    "internal links": 1.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": 1.0,
+    "accessibility issues - serious": 2.0,
+    "lighthouse accessibility": 0.96,
+    "lighthouse performance": 0.2,
+    "lighthouse seo": 0.2
+  },
+  {
+    "name": "Blaina Heritage Museum",
+    "url": "https://www.blaenau-gwent.gov.uk/en/visitors/museums-archives/blaina-heritage-action-group-museum/",
+    "company number": "1402483",
+    "companies house name": "AMBERLEY MUSEUM & HERITAGE CENTRE",
+    "companies house address": "Amberley Museum New Barn Road, Amberley, Arundel, West Sussex, England, BN18 9LT",
+    "incorporation date": "1978-11-28",
+    "company status": "Active",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": 482.81,
+    "digitisation score": 44.0,
+    "reading ease": 64.37,
+    "internal links": 131.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 4.0,
+    "accessibility issues - serious": 1.0,
+    "lighthouse accessibility": 0.98,
+    "lighthouse performance": 0.41,
+    "lighthouse seo": 0.41
+  },
+  {
+    "name": "Bodelwyddan Castle ",
+    "url": "https://www.warnerleisurehotels.co.uk/hotels/bodelwyddan-castle-hotel",
+    "company number": "2976509",
+    "companies house name": "BODELWYDDAN CASTLE ENTERPRISES LIMITED",
+    "companies house address": "Bodelwyddan Castle, Bodelwyddan, Denbighshire, LL18 5YA",
+    "incorporation date": "1994-10-07",
+    "company status": "Active\n                    \u00e2\u20ac\u201d  Active proposal to strike off",
+    "company type": "Private limited Company",
+    "digital growth score": 149.37,
+    "digitisation score": 37.0,
+    "reading ease": 66.64,
+    "internal links": 127.0,
+    "accessibility issues - minor": 2.0,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 2.0,
+    "lighthouse accessibility": 0.79,
+    "lighthouse performance": 0.34,
+    "lighthouse seo": 0.34
+  },
+  {
+    "name": "Brecknock Museum & Art Gallery ",
+    "url": "https://en.powys.gov.uk/ygaer",
+    "company number": "5514157",
+    "companies house name": "BRECKNOCK LIMITED",
+    "companies house address": "55 Brecknock Road, London, N7 0BX",
+    "incorporation date": "2005-07-20",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": 2524.44,
+    "digitisation score": 65.0,
+    "reading ease": 59.9,
+    "internal links": 23.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": null,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": 1.0,
+    "lighthouse performance": 0.56,
+    "lighthouse seo": 0.56
+  },
+  {
+    "name": "Brynmawr & District Museum",
+    "url": "https://www.brynmawrmuseum.org.uk/",
+    "company number": "14082203",
+    "companies house name": "BRYNMAWR AFC LTD",
+    "companies house address": "16 Osborne Road, Brynmawr, Ebbw Vale, Wales, NP23 4HQ",
+    "incorporation date": "2022-05-03",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": 7.8,
+    "digitisation score": 28.0,
+    "reading ease": 72.22,
+    "internal links": 1.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": 1.0,
+    "lighthouse accessibility": 0.96,
+    "lighthouse performance": 0.48,
+    "lighthouse seo": 0.48
+  },
+  {
+    "name": "Buckley Library, Museum and Gallery",
+    "url": "NO WEBSITE",
+    "company number": "",
+    "companies house name": "",
+    "companies house address": "",
+    "incorporation date": "",
+    "company status": "",
+    "company type": "",
+    "digital growth score": null,
+    "digitisation score": null,
+    "reading ease": null,
+    "internal links": null,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": null,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": null,
+    "lighthouse performance": null,
+    "lighthouse seo": null
+  },
+  {
+    "name": "Caldicot Castle",
+    "url": "NO WEBSITE",
+    "company number": "3113302",
+    "companies house name": "CALDICOT CASTLE ENTERTAINMENT LIMITED",
+    "companies house address": "Unit 16d Norman Way, Severn Bridge Industrial Estate, Caldicot, NP26 5PT",
+    "incorporation date": "1995-10-13",
+    "company status": "Dissolved",
+    "company type": "Private limited Company",
+    "digital growth score": null,
+    "digitisation score": null,
+    "reading ease": null,
+    "internal links": null,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": null,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": null,
+    "lighthouse performance": null,
+    "lighthouse seo": null
+  },
+  {
+    "name": "CARAD Rhayader Museum and Gallery ",
+    "url": "https://carad.org.uk/",
+    "company number": "",
+    "companies house name": "",
+    "companies house address": "",
+    "incorporation date": "",
+    "company status": "",
+    "company type": "",
+    "digital growth score": 500.81,
+    "digitisation score": 52.0,
+    "reading ease": 80.88,
+    "internal links": 0.0,
+    "accessibility issues - minor": 2.0,
+    "accessibility issues - moderate": 4.0,
+    "accessibility issues - serious": 3.0,
+    "lighthouse accessibility": 0.86,
+    "lighthouse performance": 0.3,
+    "lighthouse seo": 0.3
+  },
+  {
+    "name": "Cardiff Castle ",
+    "url": "http://www.cardiffcastle.com/",
+    "company number": "6361666",
+    "companies house name": "CASTLEOAK HOLDINGS (CARDIFF GATE) LIMITED",
+    "companies house address": "10 Fleet Place, London, EC4M 7QS",
+    "incorporation date": "2007-09-05",
+    "company status": "In Administration",
+    "company type": "Private limited Company",
+    "digital growth score": 55.01,
+    "digitisation score": 29.0,
+    "reading ease": 73.07,
+    "internal links": 9.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": 1.0,
+    "accessibility issues - serious": 2.0,
+    "lighthouse accessibility": 0.77,
+    "lighthouse performance": 0.5,
+    "lighthouse seo": 0.5
+  },
+  {
+    "name": "Cardiff Story Museum ",
+    "url": "",
+    "company number": "13979762",
+    "companies house name": "POOLE SAILORS STORY MUSEUM LTD",
+    "companies house address": "7 Filleul Road, Wareham, England, BH20 7AW",
+    "incorporation date": "2022-03-16",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": null,
+    "digitisation score": null,
+    "reading ease": null,
+    "internal links": null,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": null,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": null,
+    "lighthouse performance": null,
+    "lighthouse seo": null
+  },
+  {
+    "name": "Carmarthenshire County Museum ",
+    "url": "NO WEBSITE",
+    "company number": "8361953",
+    "companies house name": "BUCKINGHAMSHIRE COUNTY MUSEUM ENTERPRISES LIMITED",
+    "companies house address": "Buckinghamshire County Museum, Church Street, Aylesbury, Buckinghamshire, HP20 2QP",
+    "incorporation date": "2013-01-15",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": null,
+    "digitisation score": null,
+    "reading ease": null,
+    "internal links": null,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": null,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": null,
+    "lighthouse performance": null,
+    "lighthouse seo": null
+  },
+  {
+    "name": "Ceredigion Museum ",
+    "url": "https://ceredigionmuseum.wales/",
+    "company number": "7657289",
+    "companies house name": "CEREDIGION ACCOMMODATIONS LTD",
+    "companies house address": "1 Cambridge Terrace, Aberystwyth, Ceredigion, United Kingdom, SY23 2HR",
+    "incorporation date": "2011-06-03",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": 13.71,
+    "digitisation score": 22.0,
+    "reading ease": 61.33,
+    "internal links": 29.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": 4.0,
+    "accessibility issues - serious": 2.0,
+    "lighthouse accessibility": 0.82,
+    "lighthouse performance": 0.72,
+    "lighthouse seo": 0.72
+  },
+  {
+    "name": "Chapel Bay Fort & Museum ",
+    "url": "https://chapelbayfort.com/",
+    "company number": "3101127",
+    "companies house name": "CHAPEL BAY FORT AND MUSEUM",
+    "companies house address": "Chapel Bay Fort, Angle, Pembrokeshire, SA71 5BE",
+    "incorporation date": "1995-09-12",
+    "company status": "Active",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": 8.29,
+    "digitisation score": 34.0,
+    "reading ease": 62.95,
+    "internal links": 0.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": 1.0,
+    "lighthouse accessibility": 0.71,
+    "lighthouse performance": 0.81,
+    "lighthouse seo": 0.81
+  },
+  {
+    "name": "Chepstow Museum",
+    "url": "NO WEBSITE",
+    "company number": "7876025",
+    "companies house name": "A B ELECTRICAL (CHEPSTOW) LTD",
+    "companies house address": "17 Norse Way, Sedbury, Chepstow, Monmouthshire, NP16 7BB",
+    "incorporation date": "2011-12-08",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": null,
+    "digitisation score": null,
+    "reading ease": null,
+    "internal links": null,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": null,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": null,
+    "lighthouse performance": null,
+    "lighthouse seo": null
+  },
+  {
+    "name": "Chirk Castle ",
+    "url": "https://www.nationaltrust.org.uk/visit/wales/chirk-castle",
+    "company number": "11500311",
+    "companies house name": "ANISA (CHIRK) LIMITED",
+    "companies house address": "26 West View, Chirk, Wrexham, Wales, LL14 5HN",
+    "incorporation date": "2018-08-03",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": 7795.49,
+    "digitisation score": 40.0,
+    "reading ease": 75.0,
+    "internal links": 193.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": 0.79,
+    "lighthouse performance": 0.21,
+    "lighthouse seo": 0.21
+  },
+  {
+    "name": "Conwy Cultural Centre ",
+    "url": "https://conwyculture.com/",
+    "company number": "13150084",
+    "companies house name": "CONWY COMMUNITY RIDING CENTRE CIC",
+    "companies house address": "11 Ffordd Tirionfa, Colwyn Bay, Wales, LL29 9HA",
+    "incorporation date": "2021-01-21",
+    "company status": "Active",
+    "company type": "Private company limited by guarantee without share capital\n                       Community Interest Company (CIC)",
+    "digital growth score": 56.69,
+    "digitisation score": 39.0,
+    "reading ease": 55.84,
+    "internal links": 1.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": 1.0,
+    "accessibility issues - serious": 1.0,
+    "lighthouse accessibility": 0.89,
+    "lighthouse performance": 0.5,
+    "lighthouse seo": 0.5
+  },
+  {
+    "name": "Conwy Museum Service ",
+    "url": "http://www.conwy.com/",
+    "company number": "1205996",
+    "companies house name": "CONWY VALLEY RAILWAY MUSEUM LIMITED",
+    "companies house address": "3rd Floor, International House, 20 Hatherton Street, Walsall, West Midlands, England, WS4 2LA",
+    "incorporation date": "1975-04-03",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": 8.83,
+    "digitisation score": 12.0,
+    "reading ease": 70.63,
+    "internal links": 0.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 3.0,
+    "lighthouse accessibility": 0.69,
+    "lighthouse performance": 0.28,
+    "lighthouse seo": 0.28
+  },
+  {
+    "name": "Conwy Toll House ",
+    "url": "https://www.nationaltrust.org.uk/visit/wales/conwy-suspension-bridge",
+    "company number": "13369252",
+    "companies house name": "DIDSBURY PARK INVESTMENTS LIMITED",
+    "companies house address": "11 Didsbury Park, Manchester, United Kingdom, M20 5LH",
+    "incorporation date": "2021-04-30",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": 7795.49,
+    "digitisation score": 33.0,
+    "reading ease": 76.52,
+    "internal links": 172.0,
+    "accessibility issues - minor": 2.0,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": 0.79,
+    "lighthouse performance": 0.28,
+    "lighthouse seo": 0.28
+  },
+  {
+    "name": "Cowbridge & District Museum",
+    "url": "http://www.cowbridgemuseum.org.uk/",
+    "company number": "10525715",
+    "companies house name": "COWBRIDGE",
+    "companies house address": "Midway House Herrick Way, Staverton, Cheltenham, England, GL51 6TQ",
+    "incorporation date": "2016-12-14",
+    "company status": "Active",
+    "company type": "Private unlimited company",
+    "digital growth score": 18.69,
+    "digitisation score": 13.0,
+    "reading ease": 81.73,
+    "internal links": 12.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": 3.0,
+    "lighthouse accessibility": 0.48,
+    "lighthouse performance": 0.47,
+    "lighthouse seo": 0.47
+  },
+  {
+    "name": "Cyfarthfa Castle Museum and Art Gallery ",
+    "url": "https://www.visitmerthyr.co.uk/things-to-do/attractions/cyfarthfa-museum-art-gallery",
+    "company number": "",
+    "companies house name": "",
+    "companies house address": "",
+    "incorporation date": "",
+    "company status": "",
+    "company type": "",
+    "digital growth score": 61.32,
+    "digitisation score": 30.0,
+    "reading ease": 59.3,
+    "internal links": 86.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 2.0,
+    "lighthouse accessibility": 0.93,
+    "lighthouse performance": 0.18,
+    "lighthouse seo": 0.18
+  },
+  {
+    "name": "Cynon Valley Museum",
+    "url": "https://cynonvalleymuseum.wales/",
+    "company number": "",
+    "companies house name": "",
+    "companies house address": "",
+    "incorporation date": "",
+    "company status": "",
+    "company type": "",
+    "digital growth score": 54.66,
+    "digitisation score": 30.0,
+    "reading ease": 67.65,
+    "internal links": 0.0,
+    "accessibility issues - minor": 2.0,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 4.0,
+    "lighthouse accessibility": 0.77,
+    "lighthouse performance": 0.23,
+    "lighthouse seo": 0.23
+  },
+  {
+    "name": "Denbigh Museum ",
+    "url": "",
+    "company number": "8179609",
+    "companies house name": "DENBIGH MUSEUM / AMGUEDDFA DINBYCH",
+    "companies house address": "Church House, High Street, St Asaph, Denbighshire, LL17 0RD",
+    "incorporation date": "2012-08-14",
+    "company status": "Active",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": null,
+    "digitisation score": null,
+    "reading ease": null,
+    "internal links": null,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": null,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": null,
+    "lighthouse performance": null,
+    "lighthouse seo": null
+  },
+  {
+    "name": "Dinefwr Park and Castle",
+    "url": "https://www.nationaltrust.org.uk/visit/wales/dinefwr",
+    "company number": "11536859",
+    "companies house name": "MYNYDD MAWR AND DINEFWR ACADEMY LTD",
+    "companies house address": "Ger Y Nant, Llandybie, Ammanford, Wales, SA18 3LZ",
+    "incorporation date": "2018-08-25",
+    "company status": "Active",
+    "company type": "Private company limited by guarantee without share capital",
+    "digital growth score": 7795.49,
+    "digitisation score": 36.0,
+    "reading ease": 74.9,
+    "internal links": 188.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": 0.79,
+    "lighthouse performance": 0.25,
+    "lighthouse seo": 0.25
+  },
+  {
+    "name": "Ebbw Vale Works Archival Trust",
+    "url": "http://evwat.co.uk/",
+    "company number": "4084014",
+    "companies house name": "EBBW VALE AND DISTRICT TRUST",
+    "companies house address": "5-6 Waterside Court, Albany Street, Newport, South Wales, NP20 5NT",
+    "incorporation date": "2000-10-04",
+    "company status": "Dissolved",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": 20.3,
+    "digitisation score": 12.0,
+    "reading ease": 62.58,
+    "internal links": 12.0,
+    "accessibility issues - minor": 3.0,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": 3.0,
+    "lighthouse accessibility": 0.82,
+    "lighthouse performance": 0.26,
+    "lighthouse seo": 0.26
+  },
+  {
+    "name": "Egypt Centre - Swansea University ",
+    "url": "https://www.egypt.swan.ac.uk/",
+    "company number": "",
+    "companies house name": "",
+    "companies house address": "",
+    "incorporation date": "",
+    "company status": "",
+    "company type": "",
+    "digital growth score": 74.07,
+    "digitisation score": 15.0,
+    "reading ease": 55.4,
+    "internal links": 2.0,
+    "accessibility issues - minor": 2.0,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": 2.0,
+    "lighthouse accessibility": 0.82,
+    "lighthouse performance": 0.1,
+    "lighthouse seo": 0.1
+  },
+  {
+    "name": "Erddig ",
+    "url": "https://www.nationaltrust.org.uk/visit/wales/erddig",
+    "company number": "10388338",
+    "companies house name": "ERDDIG LIMITED",
+    "companies house address": "Office 7 37-39 Shakespeare Street, Southport, Merseyside, United Kingdom, PR8 5AB",
+    "incorporation date": "2016-09-21",
+    "company status": "Dissolved",
+    "company type": "Private limited Company",
+    "digital growth score": 7795.49,
+    "digitisation score": 38.0,
+    "reading ease": 74.19,
+    "internal links": 200.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": 0.79,
+    "lighthouse performance": 0.22,
+    "lighthouse seo": 0.22
+  },
+  {
+    "name": "Firing Line Museum ",
+    "url": "https://cardiffcastlemuseum.org.uk/",
+    "company number": "6774535",
+    "companies house name": "FIRING LINE LTD",
+    "companies house address": "Cardiff Castle, Castle Street, Cardiff, CF10 3RB",
+    "incorporation date": "2008-12-16",
+    "company status": "Active",
+    "company type": "Private company limited by guarantee without share capital",
+    "digital growth score": 119.24,
+    "digitisation score": 29.0,
+    "reading ease": 65.12,
+    "internal links": 0.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": 4.0,
+    "accessibility issues - serious": 2.0,
+    "lighthouse accessibility": 0.88,
+    "lighthouse performance": 0.55,
+    "lighthouse seo": 0.55
+  },
+  {
+    "name": "Glynn Vivian Art Gallery ",
+    "url": "https://www.glynnvivian.co.uk/",
+    "company number": "90484",
+    "companies house name": "GLYNN VIVIAN MINER'S MISSION(INCORPORATED 1906)(THE)",
+    "companies house address": "5 Old Rectory Court, 61 Wood Street, Barnet, England, EN5 4BL",
+    "incorporation date": "1906-10-18",
+    "company status": "Active",
+    "company type": "Private company limited by guarantee without share capital",
+    "digital growth score": 114.16,
+    "digitisation score": 35.0,
+    "reading ease": 61.63,
+    "internal links": 0.0,
+    "accessibility issues - minor": 2.0,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 2.0,
+    "lighthouse accessibility": 0.87,
+    "lighthouse performance": 0.44,
+    "lighthouse seo": 0.44
+  },
+  {
+    "name": "Greenfield Valley ",
+    "url": "https://greenfieldvalley.com/",
+    "company number": "2086274",
+    "companies house name": "GREENFIELD VALLEY TRUST",
+    "companies house address": "Basingwerk House Greenfield Valley, Greenfield, Holywell, Flintshire, United Kingdom, CH8 7GH",
+    "incorporation date": "1986-12-30",
+    "company status": "Active",
+    "company type": "Private company limited by guarantee without share capital",
+    "digital growth score": 8.17,
+    "digitisation score": 26.0,
+    "reading ease": 66.64,
+    "internal links": 0.0,
+    "accessibility issues - minor": 2.0,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 2.0,
+    "lighthouse accessibility": 0.86,
+    "lighthouse performance": 0.35,
+    "lighthouse seo": 0.35
+  },
+  {
+    "name": "Haverfordwest Town Museum",
+    "url": "https://haverfordwest-town-museum.org.uk/",
+    "company number": "",
+    "companies house name": "",
+    "companies house address": "",
+    "incorporation date": "",
+    "company status": "",
+    "company type": "",
+    "digital growth score": 0.25,
+    "digitisation score": 32.0,
+    "reading ease": 70.5,
+    "internal links": 0.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 1.0,
+    "lighthouse accessibility": 0.85,
+    "lighthouse performance": 0.61,
+    "lighthouse seo": 0.61
+  },
+  {
+    "name": "Hay Castle Trust ",
+    "url": "https://www.haycastletrust.org/",
+    "company number": "7639471",
+    "companies house name": "HAY CASTLE TRUST LIMITED",
+    "companies house address": "Hay Castle, Oxford Road, Hay-On-Wye, Hereford, HR3 5DG",
+    "incorporation date": "2011-05-18",
+    "company status": "Active",
+    "company type": "Private company limited by guarantee without share capital",
+    "digital growth score": 26.15,
+    "digitisation score": 41.0,
+    "reading ease": 76.82,
+    "internal links": 43.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": 4.0,
+    "accessibility issues - serious": 2.0,
+    "lighthouse accessibility": 0.86,
+    "lighthouse performance": 0.61,
+    "lighthouse seo": 0.61
+  },
+  {
+    "name": "Holyhead Maritime Museum ",
+    "url": "http://holyheadmaritimemuseum.co.uk/",
+    "company number": "1785592",
+    "companies house name": "HOLYHEAD MARITIME MUSEUM LTD",
+    "companies house address": "Holyhead Maritime Museum Ltd, Old Lifeboat Station, Newry Beach, Holyhead, Anglesey, LL65 1YD",
+    "incorporation date": "1984-01-24",
+    "company status": "Active",
+    "company type": "Private company limited by guarantee without share capital",
+    "digital growth score": 22.25,
+    "digitisation score": 16.0,
+    "reading ease": 69.28,
+    "internal links": 37.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 2.0,
+    "lighthouse accessibility": 0.69,
+    "lighthouse performance": 0.65,
+    "lighthouse seo": 0.65
+  },
+  {
+    "name": "Internal Fire: Museum of Power",
+    "url": "https://www.internalfire.com/",
+    "company number": "5016566",
+    "companies house name": "INTERNAL FIRE MUSEUM OF POWER",
+    "companies house address": "Castell Pridd Farm, Tanygroes, Cardigan, Ceredigion, SA43 2JS",
+    "incorporation date": "2004-01-15",
+    "company status": "Active",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": 67.88,
+    "digitisation score": 19.0,
+    "reading ease": 65.93,
+    "internal links": 5.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 4.0,
+    "lighthouse accessibility": 0.83,
+    "lighthouse performance": 0.07,
+    "lighthouse seo": 0.07
+  },
+  {
+    "name": "Joseph Parry\u00e2\u20ac\u2122s Cottage and Museum",
+    "url": "NO WEBSITE",
+    "company number": "5657914",
+    "companies house name": "WOODHALL SPA COTTAGE MUSEUM",
+    "companies house address": "The Bungalow, Iddesleigh Road, Woodhall Spa, England, LN10 6SH",
+    "incorporation date": "2005-12-19",
+    "company status": "Active",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": null,
+    "digitisation score": null,
+    "reading ease": null,
+    "internal links": null,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": null,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": null,
+    "lighthouse performance": null,
+    "lighthouse seo": null
+  },
+  {
+    "name": "Judge\u00e2\u20ac\u2122s Lodging ",
+    "url": "https://www.judgeslodging.org.uk/",
+    "company number": "11982936",
+    "companies house name": "JUDGES LODGINGS LTD",
+    "companies house address": "105 Eastgate Street, Gloucester, England, GL1 1PY",
+    "incorporation date": "2019-05-07",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": 10.19,
+    "digitisation score": 35.0,
+    "reading ease": 82.54,
+    "internal links": 5.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": 2.0,
+    "lighthouse accessibility": 0.76,
+    "lighthouse performance": 0.69,
+    "lighthouse seo": 0.69
+  },
+  {
+    "name": "Kidwelly Industrial Museum ",
+    "url": "http://kidwellyindustrialmuseum.org.uk/",
+    "company number": "8422411",
+    "companies house name": "CALDERDALE INDUSTRIAL MUSEUM ASSOCIATION",
+    "companies house address": "Calderdale Industrial Museum, Square Road, Halifax, England, HX1 1QG",
+    "incorporation date": "2013-02-27",
+    "company status": "Active",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": 49.62,
+    "digitisation score": 49.0,
+    "reading ease": 57.47,
+    "internal links": 0.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": null,
+    "accessibility issues - serious": 1.0,
+    "lighthouse accessibility": 0.97,
+    "lighthouse performance": 0.58,
+    "lighthouse seo": 0.58
+  },
+  {
+    "name": "Llandovery Museum",
+    "url": "https://www.llandoverymuseum.wales/",
+    "company number": "11264611",
+    "companies house name": "ARIYAN (LLANDOVERY) LIMITED",
+    "companies house address": "1 Market Square, Llandovery, United Kingdom, SA20 0AB",
+    "incorporation date": "2018-03-20",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": 3.61,
+    "digitisation score": 3.0,
+    "reading ease": 70.8,
+    "internal links": 7.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 5.0,
+    "lighthouse accessibility": 0.62,
+    "lighthouse performance": 0.24,
+    "lighthouse seo": 0.24
+  },
+  {
+    "name": "Llandudno Museum ",
+    "url": "https://llandudnomuseum.co.uk/",
+    "company number": "",
+    "companies house name": "",
+    "companies house address": "",
+    "incorporation date": "",
+    "company status": "",
+    "company type": "",
+    "digital growth score": 39.31,
+    "digitisation score": 29.0,
+    "reading ease": 65.32,
+    "internal links": 0.0,
+    "accessibility issues - minor": 2.0,
+    "accessibility issues - moderate": 1.0,
+    "accessibility issues - serious": 2.0,
+    "lighthouse accessibility": 0.96,
+    "lighthouse performance": 0.53,
+    "lighthouse seo": 0.53
+  },
+  {
+    "name": "Llanerchaeron Museum of Modern Art, Machynlleth ",
+    "url": "https://www.nationaltrust.org.uk/visit/wales/llanerchaeron",
+    "company number": "868757",
+    "companies house name": "MUSEUM OF MODERN ART LIMITED",
+    "companies house address": "30 Pembroke St, Oxford, OX1 1BP",
+    "incorporation date": "1966-01-12",
+    "company status": "Active",
+    "company type": "Private company limited by guarantee without share capital",
+    "digital growth score": 7795.49,
+    "digitisation score": 40.0,
+    "reading ease": 66.33,
+    "internal links": 189.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": 0.79,
+    "lighthouse performance": 0.25,
+    "lighthouse seo": 0.25
+  },
+  {
+    "name": "Llangollen Museum",
+    "url": "http://www.llangollenmuseum.org.uk/",
+    "company number": "4928571",
+    "companies house name": "LLANGOLLEN MUSEUM",
+    "companies house address": "Parade Street, Llangollen, Denbighshire, LL20 8PW",
+    "incorporation date": "2003-10-10",
+    "company status": "Active",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": 7.41,
+    "digitisation score": 13.0,
+    "reading ease": 75.91,
+    "internal links": 18.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 4.0,
+    "lighthouse accessibility": 0.42,
+    "lighthouse performance": 0.68,
+    "lighthouse seo": 0.68
+  },
+  {
+    "name": "Llanidloes Museum ",
+    "url": "https://en.powys.gov.uk/llanidloesmuseum",
+    "company number": "12518873",
+    "companies house name": "CAFE ROSE LLANIDLOES LTD",
+    "companies house address": "214 Horsley Heath, Tipton, West Midlands, England, DY4 7QP",
+    "incorporation date": "2020-03-16",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": 2524.44,
+    "digitisation score": 76.0,
+    "reading ease": 65.32,
+    "internal links": 20.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": null,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": 1.0,
+    "lighthouse performance": 0.63,
+    "lighthouse seo": 0.63
+  },
+  {
+    "name": "Lloyd George Museum ",
+    "url": "NO WEBSITE",
+    "company number": "",
+    "companies house name": "",
+    "companies house address": "",
+    "incorporation date": "",
+    "company status": "",
+    "company type": "",
+    "digital growth score": null,
+    "digitisation score": null,
+    "reading ease": null,
+    "internal links": null,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": null,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": null,
+    "lighthouse performance": null,
+    "lighthouse seo": null
+  },
+  {
+    "name": "Ll\u00c5\u00b7n Maritime Museum",
+    "url": "https://www.llyn-maritime-museum.co.uk/eng/",
+    "company number": "6889700",
+    "companies house name": "CARDIGAN AND DISTRICT AGRICULTURAL & MARITIME MUSEUM",
+    "companies house address": "Cwmarch, Penparc, Cardigan, Dyfed, SA43 2AB",
+    "incorporation date": "2009-04-28",
+    "company status": "Active",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": 10.01,
+    "digitisation score": 6.0,
+    "reading ease": 70.9,
+    "internal links": 0.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": 5.0,
+    "lighthouse accessibility": 0.51,
+    "lighthouse performance": 0.17,
+    "lighthouse seo": 0.17
+  },
+  {
+    "name": "Menai Heritage",
+    "url": "https://menaibridges.co.uk/",
+    "company number": "3469982",
+    "companies house name": "MENAI BRIDGE COMMUNITY HERITAGE TRUST LIMITED",
+    "companies house address": "Canolfan Thomas Telford, Mona Road, Menai Bridge, Anglesey, LL59 5EA",
+    "incorporation date": "1997-11-24",
+    "company status": "Active",
+    "company type": "Private company limited by guarantee without share capital",
+    "digital growth score": 40.03,
+    "digitisation score": 30.0,
+    "reading ease": 69.58,
+    "internal links": 0.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": 2.0,
+    "lighthouse accessibility": 0.88,
+    "lighthouse performance": 0.66,
+    "lighthouse seo": 0.66
+  },
+  {
+    "name": "Milford Haven Heritage and Maritime Museum",
+    "url": "https://www.milfordhavenmuseum.co.uk/",
+    "company number": "1954998",
+    "companies house name": "MILFORD HAVEN HERITAGE AND MARITIME MUSEUM",
+    "companies house address": "The Docks, Milford Haven, Dyfed, SA73 3AF",
+    "incorporation date": "1985-11-05",
+    "company status": "Active",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": 3.73,
+    "digitisation score": 29.0,
+    "reading ease": 78.55,
+    "internal links": 0.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": null,
+    "accessibility issues - serious": 2.0,
+    "lighthouse accessibility": 0.96,
+    "lighthouse performance": 0.27,
+    "lighthouse seo": 0.27
+  },
+  {
+    "name": "Mold Libray, Museum and Gallery",
+    "url": "https://aura.wales/libraries/mold-library/",
+    "company number": "",
+    "companies house name": "",
+    "companies house address": "",
+    "incorporation date": "",
+    "company status": "",
+    "company type": "",
+    "digital growth score": 67.39,
+    "digitisation score": 26.0,
+    "reading ease": 59.7,
+    "internal links": 0.0,
+    "accessibility issues - minor": 2.0,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 4.0,
+    "lighthouse accessibility": 0.86,
+    "lighthouse performance": 0.27,
+    "lighthouse seo": 0.27
+  },
+  {
+    "name": "Monmouth Castle and Regimental Museum",
+    "url": "http://www.monmouthcastlemuseum.org.uk/",
+    "company number": "SC173103",
+    "companies house name": "THE ROYAL SCOTS DRAGOON GUARDS REGIMENTAL AND MUSEUM SHOP LIMITED",
+    "companies house address": "Home Headquarters, The Royal Scots Dragoon Guards, The Castle, Edinburgh, EH1 2YT",
+    "incorporation date": "1997-03-01",
+    "company status": "Active",
+    "company type": "Private company limited by guarantee without share capital",
+    "digital growth score": 6.27,
+    "digitisation score": 34.0,
+    "reading ease": 76.86,
+    "internal links": 0.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": 1.0,
+    "lighthouse accessibility": 0.93,
+    "lighthouse performance": 1.0,
+    "lighthouse seo": 1.0
+  },
+  {
+    "name": "Monmouth Museum",
+    "url": "https://www.monmouthmuseum.org/",
+    "company number": "",
+    "companies house name": "",
+    "companies house address": "",
+    "incorporation date": "",
+    "company status": "",
+    "company type": "",
+    "digital growth score": 12.15,
+    "digitisation score": 44.0,
+    "reading ease": 63.66,
+    "internal links": 0.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 1.0,
+    "accessibility issues - serious": 1.0,
+    "lighthouse accessibility": 0.98,
+    "lighthouse performance": 0.36,
+    "lighthouse seo": 0.36
+  },
+  {
+    "name": "Museum of Cardiff",
+    "url": "https://museum.wales/cardiff/",
+    "company number": "",
+    "companies house name": "",
+    "companies house address": "",
+    "incorporation date": "",
+    "company status": "",
+    "company type": "",
+    "digital growth score": 1708.47,
+    "digitisation score": 59.0,
+    "reading ease": 63.86,
+    "internal links": 89.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": 1.0,
+    "lighthouse accessibility": 0.98,
+    "lighthouse performance": 0.66,
+    "lighthouse seo": 0.66
+  },
+  {
+    "name": "Museum of Modern Art, Machynlleth",
+    "url": "https://moma.cymru/en/",
+    "company number": "868757",
+    "companies house name": "MUSEUM OF MODERN ART LIMITED",
+    "companies house address": "30 Pembroke St, Oxford, OX1 1BP",
+    "incorporation date": "1966-01-12",
+    "company status": "Active",
+    "company type": "Private company limited by guarantee without share capital",
+    "digital growth score": 105.67,
+    "digitisation score": 29.0,
+    "reading ease": 61.73,
+    "internal links": 0.0,
+    "accessibility issues - minor": 2.0,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": 1.0,
+    "lighthouse accessibility": 0.88,
+    "lighthouse performance": 0.64,
+    "lighthouse seo": 0.64
+  },
+  {
+    "name": "Museum of Speed, Pendine ",
+    "url": "NO WEBSITE",
+    "company number": "4466561",
+    "companies house name": "THE PENDINE ACADEMY OF SOCIAL CARE LTD",
+    "companies house address": "Bromfield House Ellice Way, Wrexham Technology Park, Wrexham, Wales, LL13 7YW",
+    "incorporation date": "2002-06-21",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": null,
+    "digitisation score": null,
+    "reading ease": null,
+    "internal links": null,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": null,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": null,
+    "lighthouse performance": null,
+    "lighthouse seo": null
+  },
+  {
+    "name": "Museum of Welsh Cricket",
+    "url": "https://www.glamorgancricket.com/museum",
+    "company number": "6493706",
+    "companies house name": "WELSH AREA FIRE ENGINE RESTORATION SOCIETY (MUSEUM OF FIRE)",
+    "companies house address": "112 Old Road, Neath, West Glam, SA11 2BU",
+    "incorporation date": "2008-02-05",
+    "company status": "Dissolved",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": 143.27,
+    "digitisation score": 56.0,
+    "reading ease": 59.64,
+    "internal links": 0.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 2.0,
+    "lighthouse accessibility": 0.64,
+    "lighthouse performance": 0.34,
+    "lighthouse seo": 0.34
+  },
+  {
+    "name": "Nantgarw China Works Museum ",
+    "url": "http://nantgarwchinaworksmuseum.co.uk/",
+    "company number": "6113689",
+    "companies house name": "NANTGARW CHINA WORKS TRUST",
+    "companies house address": "Nantgarw House, Tyla Gwyn, Nantgarw, Rhondda Cynon Taff, CF15 7TB",
+    "incorporation date": "2007-02-19",
+    "company status": "Active",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": 83.59,
+    "digitisation score": 28.0,
+    "reading ease": 78.65,
+    "internal links": 0.0,
+    "accessibility issues - minor": 2.0,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 1.0,
+    "lighthouse accessibility": 0.96,
+    "lighthouse performance": 0.31,
+    "lighthouse seo": 0.31
+  },
+  {
+    "name": "Narberth Museum ",
+    "url": "https://www.narberthmuseum.co.uk/",
+    "company number": "2208841",
+    "companies house name": "NARBERTH MUSEUM LIMITED",
+    "companies house address": "The Bonded Stores, Church Street, Narberth, Dyfed, SA67 7BH",
+    "incorporation date": "1987-12-28",
+    "company status": "Active",
+    "company type": "Private company limited by guarantee without share capital",
+    "digital growth score": 353.12,
+    "digitisation score": 34.0,
+    "reading ease": 72.53,
+    "internal links": 4.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 3.0,
+    "lighthouse accessibility": 0.9,
+    "lighthouse performance": 0.28,
+    "lighthouse seo": 0.28
+  },
+  {
+    "name": "Narrow Gauge Railway Museum ",
+    "url": "https://narrowgaugerailwaymuseum.org.uk/",
+    "company number": "3549477",
+    "companies house name": "MOSELEY RAILWAY TRUST",
+    "companies house address": "11 Ashwood Road, Disley, Stockport, Cheshire, SK12 2EL",
+    "incorporation date": "1998-04-21",
+    "company status": "Active",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": 76.98,
+    "digitisation score": 36.0,
+    "reading ease": 60.31,
+    "internal links": 0.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": 1.0,
+    "accessibility issues - serious": 2.0,
+    "lighthouse accessibility": 0.89,
+    "lighthouse performance": 0.59,
+    "lighthouse seo": 0.59
+  },
+  {
+    "name": "National Coracle Centre ",
+    "url": "NO WEBSITE",
+    "company number": "4566469",
+    "companies house name": "THE CORACLE CENTRE LIMITED",
+    "companies house address": "The Old School, The Quay, Carmarthen, Carmarthenshire, SA31 3LN",
+    "incorporation date": "2002-10-18",
+    "company status": "Dissolved",
+    "company type": "Private limited Company",
+    "digital growth score": null,
+    "digitisation score": null,
+    "reading ease": null,
+    "internal links": null,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": null,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": null,
+    "lighthouse performance": null,
+    "lighthouse seo": null
+  },
+  {
+    "name": "National Museum Cardiff ",
+    "url": "https://museum.wales/cardiff/",
+    "company number": "1948578",
+    "companies house name": "EUREKA! THE NATIONAL CHILDREN'S MUSEUM.",
+    "companies house address": "Discovery Road, Halifax, HX1 2NE",
+    "incorporation date": "1985-09-19",
+    "company status": "Active",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": 1708.47,
+    "digitisation score": 59.0,
+    "reading ease": 63.86,
+    "internal links": 89.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": 1.0,
+    "lighthouse accessibility": 0.98,
+    "lighthouse performance": 0.67,
+    "lighthouse seo": 0.67
+  },
+  {
+    "name": "National Roman Legion Museum ",
+    "url": "https://museum.wales/roman/",
+    "company number": "1948578",
+    "companies house name": "EUREKA! THE NATIONAL CHILDREN'S MUSEUM.",
+    "companies house address": "Discovery Road, Halifax, HX1 2NE",
+    "incorporation date": "1985-09-19",
+    "company status": "Active",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": 1708.47,
+    "digitisation score": 59.0,
+    "reading ease": 55.61,
+    "internal links": 85.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": 1.0,
+    "lighthouse accessibility": 0.98,
+    "lighthouse performance": 0.66,
+    "lighthouse seo": 0.66
+  },
+  {
+    "name": "National Slate Museum ",
+    "url": "https://museum.wales/slate/",
+    "company number": "1948578",
+    "companies house name": "EUREKA! THE NATIONAL CHILDREN'S MUSEUM.",
+    "companies house address": "Discovery Road, Halifax, HX1 2NE",
+    "incorporation date": "1985-09-19",
+    "company status": "Active",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": 1708.47,
+    "digitisation score": 59.0,
+    "reading ease": 64.57,
+    "internal links": 87.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": 1.0,
+    "lighthouse accessibility": 0.98,
+    "lighthouse performance": 0.67,
+    "lighthouse seo": 0.67
+  },
+  {
+    "name": "National Waterfront Museum ",
+    "url": "https://museum.wales/swansea/",
+    "company number": "4255473",
+    "companies house name": "NATIONAL WATERFRONT MUSEUM SWANSEA",
+    "companies house address": "National Waterfront Museum, Oystermouth Road, Maritime Quarter, Swansea, SA1 3RD",
+    "incorporation date": "2001-07-19",
+    "company status": "Active",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": 1708.47,
+    "digitisation score": 59.0,
+    "reading ease": 63.86,
+    "internal links": 89.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": 1.0,
+    "lighthouse accessibility": 0.98,
+    "lighthouse performance": 0.76,
+    "lighthouse seo": 0.76
+  },
+  {
+    "name": "National Wool Museum ",
+    "url": "https://museum.wales/wool/",
+    "company number": "1948578",
+    "companies house name": "EUREKA! THE NATIONAL CHILDREN'S MUSEUM.",
+    "companies house address": "Discovery Road, Halifax, HX1 2NE",
+    "incorporation date": "1985-09-19",
+    "company status": "Active",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": 1708.47,
+    "digitisation score": 59.0,
+    "reading ease": 63.76,
+    "internal links": 83.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": 1.0,
+    "lighthouse accessibility": 0.98,
+    "lighthouse performance": 0.61,
+    "lighthouse seo": 0.61
+  },
+  {
+    "name": "Newport Museum and Art Gallery\n\nTemp closure",
+    "url": "https://www.newport.gov.uk/heritage/en/Museum-Art-Gallery/Museum-Art-Gallery.aspx",
+    "company number": "",
+    "companies house name": "",
+    "companies house address": "",
+    "incorporation date": "",
+    "company status": "",
+    "company type": "",
+    "digital growth score": 228.64,
+    "digitisation score": 29.0,
+    "reading ease": 61.43,
+    "internal links": 28.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 1.0,
+    "lighthouse accessibility": 0.82,
+    "lighthouse performance": 0.65,
+    "lighthouse seo": 0.65
+  },
+  {
+    "name": "Newtown Textile Museum ",
+    "url": "https://www.newtowntextilemuseum.co.uk/",
+    "company number": "",
+    "companies house name": "",
+    "companies house address": "",
+    "incorporation date": "",
+    "company status": "",
+    "company type": "",
+    "digital growth score": 10.71,
+    "digitisation score": 17.0,
+    "reading ease": 63.7,
+    "internal links": 0.0,
+    "accessibility issues - minor": 2.0,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 3.0,
+    "lighthouse accessibility": 0.68,
+    "lighthouse performance": 0.38,
+    "lighthouse seo": 0.38
+  },
+  {
+    "name": "Old Bell Museum ",
+    "url": "http://www.oldbellmuseum.org.uk/",
+    "company number": "1736409",
+    "companies house name": "OLD FLYING MACHINE (AIR MUSEUM) COMPANY LIMITED(THE)",
+    "companies house address": "3a Headley Road, Woodley, Reading, RG5 4JB",
+    "incorporation date": "1983-07-04",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": 23.2,
+    "digitisation score": 36.0,
+    "reading ease": 61.33,
+    "internal links": 0.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": null,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": 1.0,
+    "lighthouse performance": 0.62,
+    "lighthouse seo": 0.62
+  },
+  {
+    "name": "Oriel Plas Glyn y Weddw",
+    "url": "https://www.oriel.org.uk/",
+    "company number": "2994771",
+    "companies house name": "CWMNI PLAS GLYN'Y - WEDDW LIMITED",
+    "companies house address": "Oriel Plas Glyn Y Weddw, Llanbedrog, Pwllheli, Gwynedd, LL53 7TT",
+    "incorporation date": "1994-11-25",
+    "company status": "Active",
+    "company type": "Private company limited by guarantee without share capital",
+    "digital growth score": 42.44,
+    "digitisation score": 24.0,
+    "reading ease": 57.81,
+    "internal links": 0.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 4.0,
+    "accessibility issues - serious": 2.0,
+    "lighthouse accessibility": 0.74,
+    "lighthouse performance": 0.72,
+    "lighthouse seo": 0.72
+  },
+  {
+    "name": "Oriel Ynys M\u00c3\u00b4n ",
+    "url": "https://www.orielmon.org/",
+    "company number": "12137447",
+    "companies house name": "YNYS M\u00c3\u201dN IT LTD",
+    "companies house address": "Llwyn Grug, Gwalchmai, Caergybi, Ynys Mon, United Kingdom, LL65 4RE",
+    "incorporation date": "2019-08-02",
+    "company status": "Dissolved",
+    "company type": "Private limited Company",
+    "digital growth score": 30.75,
+    "digitisation score": 35.0,
+    "reading ease": 117.16,
+    "internal links": 2.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 1.0,
+    "lighthouse accessibility": 1.0,
+    "lighthouse performance": 0.29,
+    "lighthouse seo": 0.29
+  },
+  {
+    "name": "Parc Howard Museum ",
+    "url": "https://www.discovercarmarthenshire.com/places/llanelli-the-millennium-coastal-park/parc-howard-museum-gardens/",
+    "company number": "2602300",
+    "companies house name": "HOWARD'S LOGISTICS LIMITED",
+    "companies house address": "West Hay,Stamford Road, Kings Cliffe, Peterborough, PE8 6XX",
+    "incorporation date": "1991-04-17",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": 74.68,
+    "digitisation score": 37.0,
+    "reading ease": 56.05,
+    "internal links": 20.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 1.0,
+    "accessibility issues - serious": 1.0,
+    "lighthouse accessibility": 0.97,
+    "lighthouse performance": 0.33,
+    "lighthouse seo": 0.33
+  },
+  {
+    "name": "Pembroke Dock Heritage Trust ",
+    "url": "NO WEBSITE",
+    "company number": "5920931",
+    "companies house name": "THE PEMBROKE DOCK HERITAGE TRUST LIMITED",
+    "companies house address": "Royal Dockyard Chapel, Meyrick Owen Way, Pembroke Dock, Dyfed, SA72 6WS",
+    "incorporation date": "2006-08-31",
+    "company status": "Active",
+    "company type": "Private company limited by guarantee without share capital",
+    "digital growth score": null,
+    "digitisation score": null,
+    "reading ease": null,
+    "internal links": null,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": null,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": null,
+    "lighthouse performance": null,
+    "lighthouse seo": null
+  },
+  {
+    "name": "Pembroke Museum",
+    "url": "https://pembrokemuseum.wales/",
+    "company number": "12617659",
+    "companies house name": "PEMBROKESHIRE MOTOR MUSEUM DEVELOPMENTS LTD",
+    "companies house address": "45 High Street, Haverfordwest, Pembrokeshire, Wales, SA61 2BP",
+    "incorporation date": "2020-05-22",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": 32.21,
+    "digitisation score": 26.0,
+    "reading ease": 61.06,
+    "internal links": 41.0,
+    "accessibility issues - minor": 2.0,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": 2.0,
+    "lighthouse accessibility": 0.88,
+    "lighthouse performance": 0.26,
+    "lighthouse seo": 0.26
+  },
+  {
+    "name": "Penmaenmawr Museum ",
+    "url": "https://www.penmaenmawrmuseum.co.uk/",
+    "company number": "",
+    "companies house name": "",
+    "companies house address": "",
+    "incorporation date": "",
+    "company status": "",
+    "company type": "",
+    "digital growth score": 14.64,
+    "digitisation score": 25.0,
+    "reading ease": 60.51,
+    "internal links": 2.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": 0.9,
+    "lighthouse performance": 0.07,
+    "lighthouse seo": 0.07
+  },
+  {
+    "name": "Penrhos Cottage ",
+    "url": "https://www.visitpembrokeshire.com/attraction-listing/penrhos-cottage",
+    "company number": "2781483",
+    "companies house name": "PENRHOS LIMITED",
+    "companies house address": "31 Ambrose Lane, Harpenden, Herts, AL5 4DG",
+    "incorporation date": "1993-01-20",
+    "company status": "Liquidation",
+    "company type": "Private limited Company",
+    "digital growth score": 400.03,
+    "digitisation score": 29.0,
+    "reading ease": 69.38,
+    "internal links": 5.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": 1.0,
+    "accessibility issues - serious": 1.0,
+    "lighthouse accessibility": 0.88,
+    "lighthouse performance": 0.24,
+    "lighthouse seo": 0.24
+  },
+  {
+    "name": "Penrhyn Castle ",
+    "url": "https://www.nationaltrust.org.uk/visit/wales/penrhyn-castle-and-garden",
+    "company number": "498810",
+    "companies house name": "ALFRED MCALPINE SLATE PENRHYN LIMITED",
+    "companies house address": "Pinnacle House, Breedon-On-The-Hill, Derby, England, DE73 8AP",
+    "incorporation date": "1951-08-24",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": 7795.49,
+    "digitisation score": 36.0,
+    "reading ease": 67.86,
+    "internal links": 194.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": 0.79,
+    "lighthouse performance": 0.22,
+    "lighthouse seo": 0.22
+  },
+  {
+    "name": "Plas Newydd ",
+    "url": "NO WEBSITE",
+    "company number": "12588769",
+    "companies house name": "PLAS NEWYDD LTD",
+    "companies house address": "Plas Newydd Llanddeusant, Anglesey, Holyhead, United Kingdom, LL65 4AD",
+    "incorporation date": "2020-05-06",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": null,
+    "digitisation score": null,
+    "reading ease": null,
+    "internal links": null,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": null,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": null,
+    "lighthouse performance": null,
+    "lighthouse seo": null
+  },
+  {
+    "name": "Plas Newydd ",
+    "url": "https://www.nationaltrust.org.uk/visit/wales/plas-newydd-house-and-garden",
+    "company number": "12588769",
+    "companies house name": "PLAS NEWYDD LTD",
+    "companies house address": "Plas Newydd Llanddeusant, Anglesey, Holyhead, United Kingdom, LL65 4AD",
+    "incorporation date": "2020-05-06",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": 7795.49,
+    "digitisation score": 36.0,
+    "reading ease": 74.9,
+    "internal links": 190.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": 0.79,
+    "lighthouse performance": 0.24,
+    "lighthouse seo": 0.24
+  },
+  {
+    "name": "Plas yn Rhiw ",
+    "url": "https://www.nationaltrust.org.uk/visit/wales/plas-yn-rhiw",
+    "company number": "7864646",
+    "companies house name": "PLAS YNYSHIR HALL HOTEL LIMITED",
+    "companies house address": "Ynyshir Hall, Eglwys Fach, Machynlleth, Powys, Wales, SY20 8TA",
+    "incorporation date": "2011-11-29",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": 7795.49,
+    "digitisation score": 34.0,
+    "reading ease": 74.49,
+    "internal links": 180.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": 0.79,
+    "lighthouse performance": 0.26,
+    "lighthouse seo": 0.26
+  },
+  {
+    "name": "Pontypridd Museum ",
+    "url": "https://www.pontypriddmuseum.wales/",
+    "company number": "14383333",
+    "companies house name": "ACCUROCARE PONTYPRIDD LIMITED",
+    "companies house address": "Suite 4 Thame House Thame Road, Haddenham, Aylesbury, England, HP17 8HU",
+    "incorporation date": "2022-09-28",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": 3.6,
+    "digitisation score": 36.0,
+    "reading ease": 57.67,
+    "internal links": 51.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 4.0,
+    "lighthouse accessibility": 0.83,
+    "lighthouse performance": 0.35,
+    "lighthouse seo": 0.35
+  },
+  {
+    "name": "Porthcawl Museum ",
+    "url": "https://www.porthcawlmuseum.com/",
+    "company number": "",
+    "companies house name": "",
+    "companies house address": "",
+    "incorporation date": "",
+    "company status": "",
+    "company type": "",
+    "digital growth score": 174.7,
+    "digitisation score": 1.0,
+    "reading ease": 33.51,
+    "internal links": 56.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 1.0,
+    "lighthouse accessibility": null,
+    "lighthouse performance": null,
+    "lighthouse seo": null
+  },
+  {
+    "name": "Porthmadog Maritime Museum",
+    "url": "https://portmm.org/",
+    "company number": "6889700",
+    "companies house name": "CARDIGAN AND DISTRICT AGRICULTURAL & MARITIME MUSEUM",
+    "companies house address": "Cwmarch, Penparc, Cardigan, Dyfed, SA43 2AB",
+    "incorporation date": "2009-04-28",
+    "company status": "Active",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": 53.39,
+    "digitisation score": 31.0,
+    "reading ease": 74.59,
+    "internal links": 1.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 1.0,
+    "lighthouse accessibility": 0.96,
+    "lighthouse performance": 0.3,
+    "lighthouse seo": 0.3
+  },
+  {
+    "name": "Powis Castle",
+    "url": "https://www.nationaltrust.org.uk/visit/wales/powis-castle-and-garden",
+    "company number": "8428584",
+    "companies house name": "POWIS CASTLE SHOOT LIMITED",
+    "companies house address": "Stockton House, Red Lane, Welshpool, Powys, SY21 8RH",
+    "incorporation date": "2013-03-04",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": 7795.49,
+    "digitisation score": 38.0,
+    "reading ease": 76.42,
+    "internal links": 195.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": 0.79,
+    "lighthouse performance": 0.24,
+    "lighthouse seo": 0.24
+  },
+  {
+    "name": "Powysland Museum ",
+    "url": "NO WEBSITE",
+    "company number": "6294984",
+    "companies house name": "POWYSLAND CLUB, CLWB POWYSLAND",
+    "companies house address": "Triangle House, Union  Street, Welshpool, Powys, SY21 7PG",
+    "incorporation date": "2007-06-27",
+    "company status": "Active",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": null,
+    "digitisation score": null,
+    "reading ease": null,
+    "internal links": null,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": null,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": null,
+    "lighthouse performance": null,
+    "lighthouse seo": null
+  },
+  {
+    "name": "Radnorshire Museum",
+    "url": "https://en.powys.gov.uk/radnorshiremuseum",
+    "company number": "4243987",
+    "companies house name": "EAST RADNORSHIRE CARE LIMITED",
+    "companies house address": "Old School, Scottleton Street, Presteigne, Powys, LD8 2BL",
+    "incorporation date": "2001-06-29",
+    "company status": "Active",
+    "company type": "Private company limited by guarantee without share capital",
+    "digital growth score": 2524.44,
+    "digitisation score": 81.0,
+    "reading ease": 59.8,
+    "internal links": 22.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": null,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": 1.0,
+    "lighthouse performance": 0.69,
+    "lighthouse seo": 0.69
+  },
+  {
+    "name": "Rhondda Heritage Park - Welsh Mining Experience",
+    "url": "https://www.rctcbc.gov.uk/EN/Tourism/RhonddaHeritagePark/Home.aspx",
+    "company number": "2231595",
+    "companies house name": "FFESTINIOG AND WELSH HIGHLAND RAILWAYS HERITAGE LIMITED",
+    "companies house address": "Harbour Station, Porthmadog, Gwynedd, LL49 9NF",
+    "incorporation date": "1988-03-17",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": 1163.55,
+    "digitisation score": 23.0,
+    "reading ease": 79.16,
+    "internal links": 24.0,
+    "accessibility issues - minor": 2.0,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 2.0,
+    "lighthouse accessibility": 0.89,
+    "lighthouse performance": 0.35,
+    "lighthouse seo": 0.35
+  },
+  {
+    "name": "Rhyl Miniature Railway ",
+    "url": "https://rhylminiaturerailway.co.uk/",
+    "company number": "13971700",
+    "companies house name": "RHYL MINIATURE RAILWAY LIMITED",
+    "companies house address": "10 Cilnant, Mold, Flintshire, Wales, CH7 1GG",
+    "incorporation date": "2022-03-11",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": 31.64,
+    "digitisation score": 21.0,
+    "reading ease": 76.01,
+    "internal links": 0.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 3.0,
+    "lighthouse accessibility": 0.68,
+    "lighthouse performance": 0.47,
+    "lighthouse seo": 0.47
+  },
+  {
+    "name": "Rhyl Museum",
+    "url": "NO WEBSITE",
+    "company number": "",
+    "companies house name": "",
+    "companies house address": "",
+    "incorporation date": "",
+    "company status": "",
+    "company type": "",
+    "digital growth score": null,
+    "digitisation score": null,
+    "reading ease": null,
+    "internal links": null,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": null,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": null,
+    "lighthouse performance": null,
+    "lighthouse seo": null
+  },
+  {
+    "name": "Robert Owen Memorial Museum",
+    "url": "https://www.robert-owen-museum.org.uk",
+    "company number": "234247",
+    "companies house name": "ROBERT OWEN MEMORIAL MUSEUM(THE)",
+    "companies house address": "The Cross, Broad Street, Newtown, Powys, SY16 2BB",
+    "incorporation date": "1928-10-22",
+    "company status": "Active",
+    "company type": "Private company limited by guarantee without share capital",
+    "digital growth score": 0.51,
+    "digitisation score": 38.0,
+    "reading ease": 78.96,
+    "internal links": 6.0,
+    "accessibility issues - minor": 2.0,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": 4.0,
+    "lighthouse accessibility": 0.84,
+    "lighthouse performance": 0.32,
+    "lighthouse seo": 0.32
+  },
+  {
+    "name": "Royal Mint Museum",
+    "url": "https://www.royalmintmuseum.org.uk/",
+    "company number": "7105875",
+    "companies house name": "THE ROYAL MINT MUSEUM",
+    "companies house address": "The Royal Mint, Llantrisant, Pontyclun, Mid Glamorgan, CF72 8YT",
+    "incorporation date": "2009-12-15",
+    "company status": "Active",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": 125.13,
+    "digitisation score": 21.0,
+    "reading ease": 58.99,
+    "internal links": 78.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 2.0,
+    "lighthouse accessibility": 0.77,
+    "lighthouse performance": 0.4,
+    "lighthouse seo": 0.4
+  },
+  {
+    "name": "Royal Welch Fusiliers Regimental Museum ",
+    "url": "https://www.rwfmuseum.org.uk/index.php",
+    "company number": "13462932",
+    "companies house name": "THE ROYAL WELCH FUSILIERS MUSEUM TRUST LTD",
+    "companies house address": "Rhq Hightown Barracks, Kingsmills Road, Wrexham, United Kingdom, LL13 8RD",
+    "incorporation date": "2021-06-17",
+    "company status": "Active",
+    "company type": "Private company limited by guarantee without share capital",
+    "digital growth score": 17.04,
+    "digitisation score": 21.0,
+    "reading ease": 65.93,
+    "internal links": 4.0,
+    "accessibility issues - minor": 2.0,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 5.0,
+    "lighthouse accessibility": 0.82,
+    "lighthouse performance": 0.12,
+    "lighthouse seo": 0.12
+  },
+  {
+    "name": "Ruthin Gaol",
+    "url": "NO WEBSITE",
+    "company number": "1950221",
+    "companies house name": "BUCKINGHAM OLD GAOL TRUST",
+    "companies house address": "The Old Gaol, Market Hill, Buckingham, MK18 1JX",
+    "incorporation date": "1985-09-25",
+    "company status": "Active",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": null,
+    "digitisation score": null,
+    "reading ease": null,
+    "internal links": null,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": null,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": null,
+    "lighthouse performance": null,
+    "lighthouse seo": null
+  },
+  {
+    "name": "Scolton Manor ",
+    "url": "https://www.visitpembrokeshire.com/attraction-listing/scolton-manor",
+    "company number": "4194839",
+    "companies house name": "SCOLTON ENTERPRISES LIMITED",
+    "companies house address": "46 High Street, Haverfordwest, Pembrokeshire, SA61 2DA",
+    "incorporation date": "2001-04-05",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": 400.03,
+    "digitisation score": 29.0,
+    "reading ease": 68.47,
+    "internal links": 4.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": 1.0,
+    "accessibility issues - serious": 2.0,
+    "lighthouse accessibility": 0.87,
+    "lighthouse performance": 0.22,
+    "lighthouse seo": 0.22
+  },
+  {
+    "name": "Sir Henry Jones Museum ",
+    "url": "https://www.sirhenryjonesmuseum.org.uk/",
+    "company number": "7965957",
+    "companies house name": "SIR JOHN SOANE'S MUSEUM TRUST",
+    "companies house address": "13 Lincoln's Inn Fields, London, WC2A 3BP",
+    "incorporation date": "2012-02-27",
+    "company status": "Active",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": 1.45,
+    "digitisation score": -5.0,
+    "reading ease": 90.46,
+    "internal links": 0.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 2.0,
+    "lighthouse accessibility": null,
+    "lighthouse performance": null,
+    "lighthouse seo": null
+  },
+  {
+    "name": "South Wales Miner\u00e2\u20ac\u2122s Museum",
+    "url": "https://www.swminers.co.uk/",
+    "company number": "4891699",
+    "companies house name": "SOUTH WALES MINERS MUSEUM",
+    "companies house address": "Office 5 1st Floor Voluntary House, 112-113 Commercial Street, Maesteg, Mid Glamorgan, CF34 9DL",
+    "incorporation date": "2003-09-08",
+    "company status": "Active",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": 17.71,
+    "digitisation score": 12.0,
+    "reading ease": 64.2,
+    "internal links": 0.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 1.0,
+    "accessibility issues - serious": 3.0,
+    "lighthouse accessibility": 0.8,
+    "lighthouse performance": 0.26,
+    "lighthouse seo": 0.26
+  },
+  {
+    "name": "St Fagans: National History Museum ",
+    "url": "https://museum.wales/stfagans/",
+    "company number": "2041438",
+    "companies house name": "NATIONAL MUSEUM OF LABOUR HISTORY(THE)",
+    "companies house address": "Peoples History Museum Left Bank, Spinninhfields, Manchester, M3 3ER",
+    "incorporation date": "1986-07-28",
+    "company status": "Active",
+    "company type": "Private company limited by guarantee without share capital",
+    "digital growth score": 1708.47,
+    "digitisation score": 61.0,
+    "reading ease": 56.32,
+    "internal links": 90.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": 1.0,
+    "lighthouse accessibility": 0.98,
+    "lighthouse performance": 0.7,
+    "lighthouse seo": 0.7
+  },
+  {
+    "name": "St Winifred\u00e2\u20ac\u2122s Well",
+    "url": "http://www.stwinefrideswell.org.uk/",
+    "company number": "11102677",
+    "companies house name": "ADELE STICKLAND WELLBEING CONSULTANT LTD",
+    "companies house address": "Whyfield Ground Floor Building A Truro Business Park, Threemilestone, Truro, England, TR4 9LF",
+    "incorporation date": "2017-12-08",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": 3.09,
+    "digitisation score": 23.0,
+    "reading ease": 72.73,
+    "internal links": 26.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 1.0,
+    "lighthouse accessibility": 1.0,
+    "lighthouse performance": 0.52,
+    "lighthouse seo": 0.52
+  },
+  {
+    "name": "Storiel Tredegar House ",
+    "url": "https://www.storiel.cymru/",
+    "company number": "13546902",
+    "companies house name": "TREDEGAR HOUSE LIMITED",
+    "companies house address": "Flat 1 135 Tredegar Road, London, United Kingdom, E3 2EU",
+    "incorporation date": "2021-08-04",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": 73.74,
+    "digitisation score": 48.0,
+    "reading ease": 58.48,
+    "internal links": 1.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 1.0,
+    "lighthouse accessibility": 0.95,
+    "lighthouse performance": 0.77,
+    "lighthouse seo": 0.77
+  },
+  {
+    "name": "Swansea Museum ",
+    "url": "http://www.swanseamuseum.co.uk/",
+    "company number": "4255473",
+    "companies house name": "NATIONAL WATERFRONT MUSEUM SWANSEA",
+    "companies house address": "National Waterfront Museum, Oystermouth Road, Maritime Quarter, Swansea, SA1 3RD",
+    "incorporation date": "2001-07-19",
+    "company status": "Active",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": 162.42,
+    "digitisation score": 27.0,
+    "reading ease": 60.82,
+    "internal links": 0.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 2.0,
+    "lighthouse accessibility": 0.92,
+    "lighthouse performance": 0.47,
+    "lighthouse seo": 0.47
+  },
+  {
+    "name": "Tenby Museum and Art Gallery ",
+    "url": "https://tenbymuseum.org.uk/",
+    "company number": "",
+    "companies house name": "",
+    "companies house address": "",
+    "incorporation date": "",
+    "company status": "",
+    "company type": "",
+    "digital growth score": -22.11,
+    "digitisation score": 31.0,
+    "reading ease": 63.56,
+    "internal links": 0.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": 1.0,
+    "accessibility issues - serious": 2.0,
+    "lighthouse accessibility": 0.95,
+    "lighthouse performance": 0.67,
+    "lighthouse seo": 0.67
+  },
+  {
+    "name": "The Regimental Museum of The Royal Welsh ",
+    "url": "https://royalwelshmuseum.wales/",
+    "company number": "7769242",
+    "companies house name": "THE ROYAL WELSH REGIMENTAL MUSEUM TRUST",
+    "companies house address": "The Regimental Museum The Barracks, The Watton, Brecon, Powys, LD3 7EB",
+    "incorporation date": "2011-09-09",
+    "company status": "Active",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": 92.39,
+    "digitisation score": 49.0,
+    "reading ease": 62.44,
+    "internal links": 2.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": 1.0,
+    "lighthouse accessibility": 0.98,
+    "lighthouse performance": 0.2,
+    "lighthouse seo": 0.2
+  },
+  {
+    "name": "Tredegar and District Museum",
+    "url": "http://tredegarmuseum.co.uk/",
+    "company number": "4240988",
+    "companies house name": "THE AXBRIDGE AND DISTRICT MUSEUM TRUST",
+    "companies house address": "36 Houlgate Way, Axbridge, Somerset, BS26 2BY",
+    "incorporation date": "2001-06-26",
+    "company status": "Active",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": null,
+    "digitisation score": 20.0,
+    "reading ease": 62.85,
+    "internal links": 0.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": 2.0,
+    "lighthouse accessibility": 0.86,
+    "lighthouse performance": 0.96,
+    "lighthouse seo": 0.96
+  },
+  {
+    "name": "Tredegar House and Park",
+    "url": "https://www.nationaltrust.org.uk/visit/wales/tredegar-house",
+    "company number": "7160557",
+    "companies house name": "PARKER MOTORS (TREDEGAR) LIMITED",
+    "companies house address": "C/o Cooper Healey, Rabart House Pant Industrial Estate, Dowlais, Merthyr Tydfil, Mid Glamorgan, CF48 2SR",
+    "incorporation date": "2010-02-17",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": 7795.49,
+    "digitisation score": 36.0,
+    "reading ease": 75.1,
+    "internal links": 193.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": 0.79,
+    "lighthouse performance": 0.23,
+    "lighthouse seo": 0.23
+  },
+  {
+    "name": "Tudor Merchants House ",
+    "url": "https://www.nationaltrust.org.uk/visit/wales/tudor-merchants-house",
+    "company number": "7987712",
+    "companies house name": "HENRY TUDOR HOUSE LIMITED",
+    "companies house address": "Caerwyn Jones Chartered Accountants Emstrey House, Shrewsbury Business Park, Shrewsbury, Shropshire, England, SY2 6LG",
+    "incorporation date": "2012-03-13",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": 7795.49,
+    "digitisation score": 38.0,
+    "reading ease": 76.52,
+    "internal links": 180.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": 0.79,
+    "lighthouse performance": 0.27,
+    "lighthouse seo": 0.27
+  },
+  {
+    "name": "Ty Mawr Wybrnant",
+    "url": "https://www.nationaltrust.org.uk/visit/wales/ty-mawr-wybrnant",
+    "company number": "7018675",
+    "companies house name": "CALCH TY MAWR LIME LIMITED",
+    "companies house address": "Unit 12 Brecon Enterprise Park, Brecon Enterprise Park Warren Road, Brecon, Powys, LD3 8BT",
+    "incorporation date": "2009-09-15",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": 7795.49,
+    "digitisation score": 34.0,
+    "reading ease": 75.5,
+    "internal links": 183.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": null,
+    "lighthouse accessibility": 0.79,
+    "lighthouse performance": 0.24,
+    "lighthouse seo": 0.24
+  },
+  {
+    "name": "University of South Wales, Art Collection Museum",
+    "url": "https://gallery.southwales.ac.uk/about-collection/",
+    "company number": "2905150",
+    "companies house name": "UNIVERSITY OF WALES, NEWPORT ENTERPRISES LIMITED",
+    "companies house address": "Finance Department, Treforest, Pontypridd, Mid Glamorgan, CF37 1DL",
+    "incorporation date": "1994-03-07",
+    "company status": "Dissolved",
+    "company type": "Private limited Company",
+    "digital growth score": 5.52,
+    "digitisation score": 37.0,
+    "reading ease": 51.28,
+    "internal links": 3.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": 1.0,
+    "lighthouse accessibility": 0.94,
+    "lighthouse performance": 0.47,
+    "lighthouse seo": 0.47
+  },
+  {
+    "name": "West Wales Maritime Heritage Society ",
+    "url": "https://www.wwmhs.org.uk/",
+    "company number": "2611959",
+    "companies house name": "WEST WALES MARITIME HERITAGE",
+    "companies house address": "Hancocks Yard, Front Street, Pembroke Dock, Wales, SA72 6JY",
+    "incorporation date": "1991-05-17",
+    "company status": "Active",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": 16.61,
+    "digitisation score": 39.0,
+    "reading ease": 75.4,
+    "internal links": 42.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 2.0,
+    "lighthouse accessibility": 0.75,
+    "lighthouse performance": 0.43,
+    "lighthouse seo": 0.43
+  },
+  {
+    "name": "Winding House Museum",
+    "url": "https://www.thewindinghouse.co.uk/en/",
+    "company number": "9182708",
+    "companies house name": "THE WINDING HOUSE COMPANY LIMITED",
+    "companies house address": "The Winding House Singledge Lane, Coldred, Dover, Kent, CT15 5AG",
+    "incorporation date": "2014-08-20",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": 14.43,
+    "digitisation score": 11.0,
+    "reading ease": 69.07,
+    "internal links": 0.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 2.0,
+    "accessibility issues - serious": 4.0,
+    "lighthouse accessibility": 0.77,
+    "lighthouse performance": 0.31,
+    "lighthouse seo": 0.31
+  },
+  {
+    "name": "Wireless in Wales",
+    "url": "http://wirelessinwales.org.uk/",
+    "company number": "5329069",
+    "companies house name": "WIRELESS WALES LTD",
+    "companies house address": "14 Wychwood Close, Langland, Swansea, Swansea, SA3 4PH",
+    "incorporation date": "2005-01-11",
+    "company status": "Dissolved",
+    "company type": "Private limited Company",
+    "digital growth score": 11.66,
+    "digitisation score": 29.0,
+    "reading ease": 70.33,
+    "internal links": 30.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": 3.0,
+    "accessibility issues - serious": 1.0,
+    "lighthouse accessibility": 0.93,
+    "lighthouse performance": 0.65,
+    "lighthouse seo": 0.65
+  },
+  {
+    "name": "Wrexham County Borough Museum & Archives ",
+    "url": "https://www.wrexhamheritage.wales/archives/",
+    "company number": "5166704",
+    "companies house name": "HOME-START COUNTY BOROUGH OF WREXHAM",
+    "companies house address": "The Salvation Army Premisies, Garden Road Rhosddu, Wrexham, LL11 2NU",
+    "incorporation date": "2004-06-30",
+    "company status": "Active",
+    "company type": "Private Limited Company by guarantee without share capital use of 'Limited' exemption",
+    "digital growth score": 37.31,
+    "digitisation score": 7.0,
+    "reading ease": 63.09,
+    "internal links": 0.0,
+    "accessibility issues - minor": 1.0,
+    "accessibility issues - moderate": 4.0,
+    "accessibility issues - serious": 3.0,
+    "lighthouse accessibility": 0.84,
+    "lighthouse performance": 0.33,
+    "lighthouse seo": 0.33
+  },
+  {
+    "name": "Yr Ysgwrn",
+    "url": "https://yrysgwrn.com/en/",
+    "company number": "12549559",
+    "companies house name": "ADAM YN YR ARDD CYF.",
+    "companies house address": "45 Penygroes Road, Gorslas, Llanelli, Wales, SA14 7LD",
+    "incorporation date": "2020-04-07",
+    "company status": "Active",
+    "company type": "Private limited Company",
+    "digital growth score": 33.54,
+    "digitisation score": 38.0,
+    "reading ease": 55.74,
+    "internal links": 4.0,
+    "accessibility issues - minor": null,
+    "accessibility issues - moderate": 1.0,
+    "accessibility issues - serious": 1.0,
+    "lighthouse accessibility": 0.77,
+    "lighthouse performance": 0.42,
+    "lighthouse seo": 0.42
+  }
+];
+
+        // Filter out museums with invalid data
+        const validMuseums = museumsData.filter(m => m.name && m.name.trim() !== '');
+
+        // Initialize Overview
+        function createOverview() {
+            const grid = document.getElementById('overview-grid');
+            
+            // Calculate statistics
+            const totalMuseums = validMuseums.length;
+            
+            const validDigitalScores = validMuseums
+                .map(m => m['digital growth score'])
+                .filter(s => s !== null && !isNaN(s));
+            const avgDigitalScore = validDigitalScores.length > 0 
+                ? (validDigitalScores.reduce((a, b) => a + b, 0) / validDigitalScores.length).toFixed(2)
+                : 'N/A';
+            
+            const validDigitisationScores = validMuseums
+                .map(m => m['digitisation score'])
+                .filter(s => s !== null && !isNaN(s));
+            const avgDigitisationScore = validDigitisationScores.length > 0
+                ? (validDigitisationScores.reduce((a, b) => a + b, 0) / validDigitisationScores.length).toFixed(2)
+                : 'N/A';
+            
+            const validAccessibilityScores = validMuseums
+                .map(m => m['lighthouse accessibility'])
+                .filter(s => s !== null && !isNaN(s));
+            const avgAccessibility = validAccessibilityScores.length > 0
+                ? (validAccessibilityScores.reduce((a, b) => a + b, 0) / validAccessibilityScores.length).toFixed(2)
+                : 'N/A';
+
+            const stats = [
+                { label: 'Total Museums', value: totalMuseums },
+                { label: 'Avg Digital Growth Score', value: avgDigitalScore },
+                { label: 'Avg Digitisation Score', value: avgDigitisationScore },
+                { label: 'Avg Accessibility Score', value: avgAccessibility }
+            ];
+
+            stats.forEach(stat => {
+                const card = document.createElement('div');
+                card.className = 'overview-card';
+                card.innerHTML = `
+                    <h3>${stat.label}</h3>
+                    <div class="stat-value">${stat.value}</div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Initialize Table
+        function createTable(data) {
+            const header = document.getElementById('table-header');
+            const body = document.getElementById('table-body');
+            
+            // Define columns to display
+            const columns = ['name', 'url', 'digital growth score', 'digitisation score', 
+                           'lighthouse accessibility', 'lighthouse performance'];
+            
+            // Create header
+            columns.forEach(col => {
+                const th = document.createElement('th');
+                th.textContent = col.charAt(0).toUpperCase() + col.slice(1);
+                header.appendChild(th);
+            });
+            
+            // Create rows
+            data.forEach(row => {
+                const tr = document.createElement('tr');
+                columns.forEach(col => {
+                    const td = document.createElement('td');
+                    let value = row[col];
+                    if (value === null || value === undefined || value === '') {
+                        value = '-';
+                    } else if (typeof value === 'number') {
+                        value = value.toFixed(2);
+                    }
+                    td.textContent = value;
+                    tr.appendChild(td);
+                });
+                body.appendChild(tr);
+            });
+        }
+
+        // Search functionality
+        document.getElementById('search-box').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#table-body tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        // Initialize Charts
+        function createCharts() {
+            // Chart 1: Top 10 Museums by Digital Growth Score
+            const museumsWithScores = validMuseums
+                .filter(m => m['digital growth score'] !== null && !isNaN(m['digital growth score']))
+                .sort((a, b) => b['digital growth score'] - a['digital growth score'])
+                .slice(0, 10);
+
+            const chart1 = document.getElementById('chart1');
+            const maxScore = Math.max(...museumsWithScores.map(m => m['digital growth score']));
+            
+            museumsWithScores.forEach(museum => {
+                const barItem = document.createElement('div');
+                barItem.className = 'bar-item';
+                const percentage = (museum['digital growth score'] / maxScore) * 100;
+                barItem.innerHTML = `
+                    <div class="bar-label">${museum.name.substring(0, 25)}</div>
+                    <div class="bar-wrapper">
+                        <div class="bar-fill" style="width: ${percentage}%">
+                            ${museum['digital growth score'].toFixed(2)}
+                        </div>
+                    </div>
+                `;
+                chart1.appendChild(barItem);
+            });
+
+            // Chart 2: Accessibility Metrics
+            const accessibilityData = validMuseums
+                .filter(m => m['lighthouse accessibility'] !== null && !isNaN(m['lighthouse accessibility']));
+            
+            const accessibilityRanges = {
+                'Excellent (0.9-1.0)': { count: 0, color: '#2ecc71' },
+                'Good (0.7-0.9)': { count: 0, color: '#3498db' },
+                'Fair (0.5-0.7)': { count: 0, color: '#f39c12' },
+                'Poor (<0.5)': { count: 0, color: '#e74c3c' }
+            };
+
+            accessibilityData.forEach(m => {
+                const score = m['lighthouse accessibility'];
+                if (score >= 0.9) accessibilityRanges['Excellent (0.9-1.0)'].count++;
+                else if (score >= 0.7) accessibilityRanges['Good (0.7-0.9)'].count++;
+                else if (score >= 0.5) accessibilityRanges['Fair (0.5-0.7)'].count++;
+                else accessibilityRanges['Poor (<0.5)'].count++;
+            });
+
+            const chart2 = document.getElementById('chart2');
+            const total = accessibilityData.length;
+            
+            // Create pie visual
+            const pieVisual = document.createElement('div');
+            pieVisual.className = 'pie-visual';
+            let currentAngle = 0;
+            let gradientParts = [];
+            
+            Object.entries(accessibilityRanges).forEach(([label, data]) => {
+                const percentage = (data.count / total) * 100;
+                const angle = (data.count / total) * 360;
+                const nextAngle = currentAngle + angle;
+                
+                if (percentage > 0) {
+                    gradientParts.push(`${data.color} ${currentAngle}deg ${nextAngle}deg`);
+                    currentAngle = nextAngle;
+                }
+            });
+            
+            pieVisual.style.background = `conic-gradient(${gradientParts.join(', ')})`;
+            
+            // Create legend
+            const pieLegend = document.createElement('div');
+            pieLegend.className = 'pie-legend';
+            
+            Object.entries(accessibilityRanges).forEach(([label, data]) => {
+                const legendItem = document.createElement('div');
+                legendItem.className = 'legend-item';
+                const percentage = ((data.count / total) * 100).toFixed(1);
+                legendItem.innerHTML = `
+                    <div class="legend-color" style="background-color: ${data.color}"></div>
+                    <div class="legend-label">${label}</div>
+                    <div class="legend-value">${data.count} (${percentage}%)</div>
+                `;
+                pieLegend.appendChild(legendItem);
+            });
+            
+            chart2.appendChild(pieVisual);
+            chart2.appendChild(pieLegend);
+        }
+
+        // Initialize Comparison
+        function setupComparison() {
+            const select = document.getElementById('comparison-field');
+            const numericFields = [
+                'digital growth score',
+                'digitisation score',
+                'reading ease',
+                'internal links',
+                'accessibility issues - minor',
+                'accessibility issues - moderate',
+                'accessibility issues - serious',
+                'lighthouse accessibility',
+                'lighthouse performance',
+                'lighthouse seo'
+            ];
+
+            numericFields.forEach(field => {
+                const option = document.createElement('option');
+                option.value = field;
+                option.textContent = field.charAt(0).toUpperCase() + field.slice(1);
+                select.appendChild(option);
+            });
+
+            select.addEventListener('change', (e) => {
+                const field = e.target.value;
+                if (field) {
+                    displayComparison(field);
+                }
+            });
+        }
+
+        function displayComparison(field) {
+            const result = document.getElementById('comparison-result');
+            const values = validMuseums
+                .map(item => item[field])
+                .filter(v => v !== null && v !== undefined && !isNaN(v));
+
+            if (values.length === 0) {
+                result.innerHTML = '<p>No valid data available for this field.</p>';
+                return;
+            }
+
+            const max = Math.max(...values);
+            const min = Math.min(...values);
+            const avg = values.reduce((a, b) => a + b, 0) / values.length;
+            const sortedValues = [...values].sort((a, b) => a - b);
+            const median = sortedValues[Math.floor(sortedValues.length / 2)];
+
+            result.innerHTML = `
+                <div class="comparison-stats">
+                    <div class="comparison-stat">
+                        <div class="comparison-stat-label">Maximum</div>
+                        <div class="comparison-stat-value">${max.toFixed(2)}</div>
+                    </div>
+                    <div class="comparison-stat">
+                        <div class="comparison-stat-label">Minimum</div>
+                        <div class="comparison-stat-value">${min.toFixed(2)}</div>
+                    </div>
+                    <div class="comparison-stat">
+                        <div class="comparison-stat-label">Average</div>
+                        <div class="comparison-stat-value">${avg.toFixed(2)}</div>
+                    </div>
+                    <div class="comparison-stat">
+                        <div class="comparison-stat-label">Median</div>
+                        <div class="comparison-stat-value">${median.toFixed(2)}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Initialize all components when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            createOverview();
+            createTable(validMuseums);
+            createCharts();
+            setupComparison();
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('.nav-item a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
